@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package user;
+
+import "google/protobuf/empty.proto";
+option go_package = "github.com/Roflan4eg/auth-serivce/internal/transport/grpc/pb";
+
+
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
+
+  rpc GetUserById(GetUserRequest) returns (UserResponse);
+
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (UserResponse);
+
+//  rpc UpdateUser(UserResponse) returns (UserResponse);
+
+  rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (google.protobuf.Empty);
+
+  rpc DeactivateUser(DeactivateUserRequest) returns (google.protobuf.Empty);
+
+  rpc ValidatePassword(ValidatePasswordRequest) returns (ValidatePasswordResponse);
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+  string password_confirm = 3;
+}
+message UserResponse {
+  string id = 1;
+  string email = 2;
+  bool is_active = 4;
+}
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message UpdateUserPasswordRequest{
+  string id = 1;
+  string old_password = 2;
+  string new_password = 3;
+  string new_password_confirm = 4;
+}
+
+message DeactivateUserRequest {
+  string user_id = 1;
+}
+
+message ValidatePasswordRequest {
+  string user_id = 1;
+  string password = 2;
+}
+
+message ValidatePasswordResponse {
+  bool is_valid = 1;
+}
+

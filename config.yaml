@@ -1,0 +1,57 @@
+app:
+  #APP_ENV from env
+  name: auth-service
+  version: 0.0.1
+  log_path: stdout
+  shutdown_timeout: 15s
+  auto_migrate: true
+
+database:
+
+  #### from env
+  #  DB_HOST
+  #  DB_PORT
+  #  DB_USER
+  #  DB_PASSWORD
+  #  DB_NAME
+  ####
+  ssl_mode: disable
+  max_conns: 10
+  max_conn_lifetime: 1h
+  connect_timeout: 5s
+  # min_conns: 2
+  # max_conn_idle_time: 5m
+  # health_check_period: 1m
+  # statement_timeout: 30s
+  # query_timeout: 30s
+
+http:
+  port: 8080
+  host: 0.0.0.0
+  read_timeout: 30s
+  write_timeout: 30s
+
+grpc:
+  port: 9090
+  host: 0.0.0.0
+  read_timeout: 30s
+  write_timeout: 30s
+
+redis:
+  #### from env
+  #  REDIS_HOST
+  #  REDIS_PORT
+  #  REDIS_PASSWORD
+  #  REDIS_DB
+  ####
+  ttl: 168h
+  max_conns: 10
+  max_conn_lifetime: 1h
+  connect_timeout: 5s
+
+jwt:
+  #JWT_SECRET_KEY from env
+  refresh_token_ttl: 168h
+  access_token_ttl: 15m
+  issuer: auth-service
+  audience: auth-service
