@@ -3,7 +3,7 @@ package validation
 type CreateUserRequest struct {
 	Email           string `validate:"required,email,min=5,max=255"`
 	Password        string `validate:"required,strongPassword"`
-	PasswordConfirm string `validate:"required,eqfield=Password"`
+	PasswordConfirm string `json:"password_confirm" validate:"required,eqfield=Password"`
 }
 
 type GetUserRequest struct {

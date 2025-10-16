@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
-	cfg, err := config.LoadFromFile("config.yaml")
+	cfg, err := config.LoadFromFile("config/config.yaml")
 	if err != nil {
 		panic(err)
 	}
 	log := logger.NewLogger(cfg.App)
 
 	if cfg.App.AutoMigrate {
-		if err = storage.RunMigrations(cfg.Database, log); err != nil {
+		if err = storage.RunMigrations(cfg.Postgres, log); err != nil {
 			panic(err)
 		}
 	}

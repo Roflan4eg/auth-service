@@ -5,9 +5,10 @@ app:
   log_path: stdout
   shutdown_timeout: 15s
   auto_migrate: true
+  cache_type: redis
+  db_type: postgres
 
-database:
-
+postgres:
   #### from env
   #  DB_HOST
   #  DB_PORT
@@ -28,14 +29,14 @@ database:
 http:
   port: 8080
   host: 0.0.0.0
-  read_timeout: 30s
-  write_timeout: 30s
+  read_timeout: 5s
+  write_timeout: 5s
 
 grpc:
   port: 9090
   host: 0.0.0.0
-  read_timeout: 30s
-  write_timeout: 30s
+  read_timeout: 5s
+  write_timeout: 5s
 
 redis:
   #### from env

@@ -18,7 +18,7 @@ import (
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
-func RunMigrations(cfg *config.DatabaseConfig, logger *logger.Logger) error {
+func RunMigrations(cfg *config.PostgresConfig, logger *logger.Logger) error {
 	db, err := sql.Open("postgres", cfg.ConnectionString())
 	if err != nil {
 		return fmt.Errorf("create migration connection: %w", err)

@@ -2,13 +2,16 @@ package interceptors
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	validation "github.com/Roflan4eg/auth-serivce/internal/lib/validation"
-
-	"google.golang.org/grpc"
+	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 
 	pb "github.com/Roflan4eg/auth-serivce/internal/interfaces/grpc/pb"
+	"google.golang.org/grpc"
 )
 
 func Validation() grpc.UnaryServerInterceptor {
@@ -37,9 +40,7 @@ func Validation() grpc.UnaryServerInterceptor {
 		if validationErr != nil {
 			return nil, status.Errorf(
 				codes.InvalidArgument,
-				"validation failed: %v",
-				validationErr,
-			)
+				formatValidationError(validationErr))
 		}
 
 		return handler(ctx, req)
@@ -52,7 +53,8 @@ func validateCreateUserReq(req *pb.CreateUserRequest) error {
 		Password:        req.GetPassword(),
 		PasswordConfirm: req.GetPasswordConfirm(),
 	}
-	return validation.ValidateStruct(&validationReq)
+	err := validation.ValidateStruct(&validationReq)
+	return err
 }
 
 func validateUpdateUserPassReq(req *pb.UpdateUserPasswordRequest) error {
@@ -87,4 +89,35 @@ func validateLoginReq(req *pb.LoginRequest) error {
 		Password: req.GetPassword(),
 	}
 	return validation.ValidateStruct(&validationReq)
+}
+
+func formatValidationError(err error) string {
+	var validationErrors validator.ValidationErrors
+	if errors.As(err, &validationErrors) {
+		var errs []string
+		for _, fieldErr := range validationErrors {
+			errs = append(errs, formatFieldError(fieldErr))
+		}
+		return strings.Join(errs, "; ")
+	}
+	return err.Error()
+}
+
+func formatFieldError(fieldErr validator.FieldError) string {
+	fieldName := strings.ToLower(fieldErr.Field())
+
+	switch fieldErr.Tag() {
+	case "eqfield":
+		return fmt.Sprintf("%s must be equal to %s", fieldName, fieldErr.Param())
+	case "required":
+		return fmt.Sprintf("%s is required", fieldName)
+	case "min":
+		return fmt.Sprintf("%s must be at least %s characters", fieldName, fieldErr.Param())
+	case "max":
+		return fmt.Sprintf("%s must be at most %s characters", fieldName, fieldErr.Param())
+	case "strongPassword":
+		return fmt.Sprintf("weak %s - must contain uppercase letters, numbers and special characters, at least 8 characters", fieldName)
+	default:
+		return fmt.Sprintf("%s is invalid", fieldName)
+	}
 }

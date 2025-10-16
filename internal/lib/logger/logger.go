@@ -177,6 +177,10 @@ func (e *errorWithLogCtx) Error() string {
 }
 
 func WrapError(ctx context.Context, err error) error {
+	var e *errorWithLogCtx
+	if errors.As(err, &e) {
+		return err
+	}
 	c := logCtx{}
 	if x, ok := ctx.Value(slogFields).(logCtx); ok {
 		c = x

@@ -90,6 +90,7 @@ func translateCustomError(err error) error {
 		domain.ErrSessionAlreadyExists:  codes.AlreadyExists,
 		domain.ErrUserAlreadyExists:     codes.AlreadyExists,
 		domain.ErrPermissionDenied:      codes.PermissionDenied,
+		domain.ErrInvalidPassword:       codes.InvalidArgument,
 	}
 	originalErr := l.OriginalError(err)
 	for knownErr, code := range errorMapping {

@@ -12,7 +12,7 @@ type PostgresStorage struct {
 	pool *pgxpool.Pool
 }
 
-func NewPostgresStorage(cfg *config.DatabaseConfig) (*PostgresStorage, error) {
+func NewPostgresStorage(cfg *config.PostgresConfig) (*PostgresStorage, error) {
 	poolConfig, err := pgxpool.ParseConfig(cfg.ConnectionString())
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
@@ -35,10 +35,11 @@ func NewPostgresStorage(cfg *config.DatabaseConfig) (*PostgresStorage, error) {
 	return &PostgresStorage{pool: pool}, nil
 }
 
-func (s *PostgresStorage) Close() {
+func (s *PostgresStorage) Close() error {
 	s.pool.Close()
+	return nil
 }
 
-func (s *PostgresStorage) DB() *pgxpool.Pool {
+func (s *PostgresStorage) DB() any {
 	return s.pool
 }

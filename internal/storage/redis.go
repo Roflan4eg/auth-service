@@ -8,7 +8,7 @@ import (
 )
 
 type RedisClient struct {
-	Client *redis.Client
+	client *redis.Client
 }
 
 func NewRedisClient(cfg *config.RedisConfig) (*RedisClient, error) {
@@ -22,13 +22,17 @@ func NewRedisClient(cfg *config.RedisConfig) (*RedisClient, error) {
 		return nil, fmt.Errorf("failed to ping redis: %w", err)
 	}
 
-	return &RedisClient{Client: client}, nil
+	return &RedisClient{client: client}, nil
 }
 
 func (s *RedisClient) Close() error {
-	err := s.Client.Close()
+	err := s.client.Close()
 	if err != nil {
 		return fmt.Errorf("failed to close redis client: %w", err)
 	}
 	return nil
+}
+
+func (s *RedisClient) Client() any {
+	return s.client
 }

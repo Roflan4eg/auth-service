@@ -5,13 +5,14 @@ import (
 	"time"
 )
 
-type DatabaseConfig struct {
+type PostgresConfig struct {
 	Host     string `yaml:"-" env:"HOST"`
 	Port     string `yaml:"-" env:"PORT"`
 	User     string `yaml:"-" env:"USER"`
 	Password string `yaml:"-" env:"PASSWORD"`
 	Name     string `yaml:"-" env:"NAME"`
 	SSLMode  string `yaml:"ssl_mode" env:"SSLMODE" envDefault:"disable"`
+	Type     string `yaml:"-" env:"TYPE" envDefault:"postgres"`
 
 	MaxConns        int           `yaml:"max_conns" env:"MAX_CONNS" envDefault:"10"`
 	MaxConnLifetime time.Duration `yaml:"max_conn_lifetime" env:"MAX_CONN_LIFETIME" envDefault:"1h"`
@@ -23,7 +24,7 @@ type DatabaseConfig struct {
 	//QueryTimeout     time.Duration `yaml:"query_timeout" json:"query_timeout" env:"DB_QUERY_TIMEOUT"`
 }
 
-func (c *DatabaseConfig) ConnectionString() string {
+func (c *PostgresConfig) ConnectionString() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=%s",
 		c.User, c.Password, c.Host, c.Port, c.Name, c.SSLMode)
 }
@@ -56,6 +57,7 @@ type RedisConfig struct {
 	Password string        `yaml:"-" env:"PASSWORD" envDefault:""`
 	DB       int           `yaml:"-" env:"DB" envDefault:"0"`
 	TTL      time.Duration `yaml:"ttl" env:"TTL" envDefault:"168h"`
+	Type     string        `yaml:"-" env:"TYPE" envDefault:"redis"`
 }
 
 func (c *RedisConfig) Address() string {
@@ -65,7 +67,7 @@ func (c *RedisConfig) Address() string {
 type JWTConfig struct {
 	Secret          string        `yaml:"-" env:"SECRET_KEY"`
 	AccessTokenTTL  time.Duration `yaml:"access_token_ttl" env:"ACCESS_TOKEN_TTL" envDefault:"15m"`
-	RefreshTokenTTL time.Duration `yaml:"refresh_token_ttl" env:"REFRESH_TOKEN_TTL" envDefault:"1h"`
+	RefreshTokenTTL time.Duration `yaml:"refresh_token_ttl" env:"REFRESH_TOKEN_TTL" envDefault:"168h"`
 }
 
 type AppConfig struct {
@@ -75,11 +77,14 @@ type AppConfig struct {
 	LogPath         string        `yaml:"log_path" env:"LOG_PATH" envDefault:"stdout"`
 	ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
 	AutoMigrate     bool          `yaml:"auto_migrate" env:"AUTO_MIGRATE" envDefault:"true"`
+
+	CacheType string `yaml:"cache_type" env:"CACHE_TYPE" envDefault:"redis"`
+	DBType    string `yaml:"db_type" env:"DB_TYPE" envDefault:"postgres"`
 }
 
 type Config struct {
 	App       *AppConfig      `yaml:"app" envPrefix:"APP_"`
-	Database  *DatabaseConfig `yaml:"database" envPrefix:"DB_"`
+	Postgres  *PostgresConfig `yaml:"postgres" envPrefix:"POSTGRES_"`
 	HTTP      *HTTPConfig     `yaml:"http" envPrefix:"HTTP_"`
 	Redis     *RedisConfig    `yaml:"redis" envPrefix:"REDIS_"`
 	GRPC      *GRPCConfig     `yaml:"grpc" envPrefix:"GRPC_"`

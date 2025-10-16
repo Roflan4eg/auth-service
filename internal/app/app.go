@@ -40,7 +40,7 @@ func New(cfg *config.Config, logger *logger.Logger) *App {
 
 func (a *App) Setup() error {
 	a.closer.Add(a.stopServers)
-	stor, err := storage.NewStorage(a.cfg, a.logger)
+	stor, err := storage.NewContainer(a.cfg, a.logger)
 	if err != nil {
 		return fmt.Errorf("storage setup: %w", err)
 	}
