@@ -103,9 +103,6 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*m
 	if ses.RefreshToken != refreshToken {
 		return nil, logger.WrapError(ctx, ErrInvalidRefreshToken)
 	}
-	if ses.RefreshExpiresAt.Before(time.Now()) {
-		return nil, logger.WrapError(ctx, ErrTokenExpired)
-	}
 	newAccessToken, err := s.jwtManager.GenerateAccessToken(ses.UserID, ses.ID)
 	if err != nil {
 		return nil, logger.WrapError(ctx, err)
@@ -141,10 +138,6 @@ func (s *AuthService) ValidateToken(ctx context.Context, accessToken string) *mo
 	}
 	if ses.AccessToken != accessToken {
 		resp.Error = ErrInvalidAccessToken.Error()
-		return resp
-	}
-	if ses.ExpiresAt.Before(time.Now()) {
-		resp.Error = ErrTokenMalformed.Error()
 		return resp
 	}
 	resp.UserId = ses.UserID

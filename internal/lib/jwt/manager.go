@@ -11,6 +11,8 @@ var (
 	ErrInvalidTokenFormat = errors.New("invalid token")
 	ErrFailedGen          = errors.New("failed to generate token")
 	ErrTokenMalformed     = errors.New("token malformed")
+	ErrTokenExpired       = errors.New("token expired")
+	ErrTokenNotValidYet   = errors.New("token not valid yet")
 )
 
 type Manager struct {
@@ -77,7 +79,16 @@ func (m *Manager) ValidateToken(tokenString string) (*Claims, error) {
 	})
 
 	if err != nil {
-		return nil, ErrTokenMalformed
+		switch {
+		case errors.Is(err, jwt.ErrTokenMalformed):
+			return nil, ErrTokenMalformed
+		case errors.Is(err, jwt.ErrTokenExpired):
+			return nil, ErrTokenExpired
+		case errors.Is(err, jwt.ErrTokenNotValidYet):
+			return nil, ErrTokenNotValidYet
+		default:
+			return nil, ErrInvalidTokenFormat
+		}
 	}
 
 	if !token.Valid {

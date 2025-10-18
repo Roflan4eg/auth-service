@@ -24,7 +24,7 @@ type Suite struct {
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
-	cfg, err := LoadFromFile("../config/config.yaml")
+	cfg, err := LoadFromFile("../../config/config.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func LoadFromFile(path string) (*config.Config, error) {
 		return nil, err
 	}
 
-	err := godotenv.Load("../.env")
+	err := godotenv.Load("../../.env")
 	if err != nil {
 		return nil, err
 	}

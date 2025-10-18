@@ -1,4 +1,4 @@
-package tests
+package integration
 
 import (
 	auth "github.com/Roflan4eg/auth-serivce/internal/interfaces/grpc/pb"
