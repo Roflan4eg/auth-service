@@ -9,13 +9,11 @@ import (
 func WithInterceptors(logger *logger.Logger) []grpc.ServerOption {
 	return []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
+			interceptors.MetricsInterceptor(),
 			interceptors.Validation(),
 			interceptors.Logging(logger),
 			interceptors.Auth(),
 			interceptors.Recovery(logger),
 		),
-		//grpc.StreamInterceptor(
-		//	interceptors.StreamLoggingInterceptor(),
-		//),
 	}
 }

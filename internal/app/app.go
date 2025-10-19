@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/Roflan4eg/auth-serivce/config"
 	"github.com/Roflan4eg/auth-serivce/internal/app/grpc"
-	"github.com/Roflan4eg/auth-serivce/internal/interfaces/grpc/handlers"
+	"github.com/Roflan4eg/auth-serivce/internal/app/http"
+	grpcHandlers "github.com/Roflan4eg/auth-serivce/internal/interfaces/grpc/handlers"
+	httpHandlers "github.com/Roflan4eg/auth-serivce/internal/interfaces/http/handlers"
 	"github.com/Roflan4eg/auth-serivce/internal/lib/logger"
 	"github.com/Roflan4eg/auth-serivce/internal/repository"
 	"github.com/Roflan4eg/auth-serivce/internal/services"
@@ -20,14 +22,15 @@ type Server interface {
 }
 
 type App struct {
-	cfg        *config.Config
-	logger     *logger.Logger
-	storage    *storage.Container
-	repository *repository.Container
-	services   *services.Container
-	handlers   *handlers.Container
-	servers    []Server
-	closer     *Closer
+	cfg          *config.Config
+	logger       *logger.Logger
+	storage      *storage.Container
+	repository   *repository.Container
+	services     *services.Container
+	grpcHandlers *grpcHandlers.Container
+	httpHandlers *httpHandlers.Container
+	servers      []Server
+	closer       *Closer
 }
 
 func New(cfg *config.Config, logger *logger.Logger) *App {
@@ -49,7 +52,8 @@ func (a *App) Setup() error {
 
 	a.repository = repository.NewContainer(a.storage, a.cfg, a.logger)
 	a.services = services.NewContainer(a.repository, a.cfg, a.logger)
-	a.handlers = handlers.NewContainer(a.services, a.cfg, a.logger)
+	a.grpcHandlers = grpcHandlers.NewContainer(a.services, a.cfg, a.logger)
+	a.httpHandlers = httpHandlers.NewContainer(a.cfg)
 
 	if err = a.setupServers(); err != nil {
 		return fmt.Errorf("server setup: %w", err)
@@ -88,11 +92,17 @@ func (a *App) Start() error {
 
 func (a *App) setupServers() error {
 	grpcServer := grpc.NewServer(
-		a.handlers,
+		a.grpcHandlers,
 		a.logger,
 		a.cfg.GRPC.Port,
 	)
+	httpServer := http.NewServer(
+		a.httpHandlers,
+		a.logger,
+		a.cfg.HTTP.Port,
+	)
 	a.servers = append(a.servers, grpcServer)
+	a.servers = append(a.servers, httpServer)
 
 	return nil
 }
