@@ -24,7 +24,7 @@ type Suite struct {
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
-	cfg, err := LoadFromFile("../../config/config.yaml")
+	cfg, err := LoadFromFile("../../config.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}

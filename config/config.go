@@ -70,6 +70,12 @@ type JWTConfig struct {
 	RefreshTokenTTL time.Duration `yaml:"refresh_token_ttl" env:"REFRESH_TOKEN_TTL" envDefault:"168h"`
 }
 
+type MetricsConfig struct {
+	User     string        `yaml:"-" env:"USER"`
+	Password string        `yaml:"-" env:"PASSWORD"`
+	Interval time.Duration `yaml:"interval" env:"INTERVAL" envDefault:"10s"`
+}
+
 type AppConfig struct {
 	Name            string        `yaml:"name" env:"NAME" envDefault:"auth-service"`
 	Environment     string        `yaml:"environment" env:"ENV" envDefault:"local"`
@@ -89,4 +95,5 @@ type Config struct {
 	Redis     *RedisConfig    `yaml:"redis" envPrefix:"REDIS_"`
 	GRPC      *GRPCConfig     `yaml:"grpc" envPrefix:"GRPC_"`
 	JWTConfig *JWTConfig      `yaml:"jwt" envPrefix:"JWT_"`
+	Metrics   *MetricsConfig  `yaml:"metrics" envPrefix:"METRICS_"`
 }

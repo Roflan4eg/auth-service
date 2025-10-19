@@ -56,3 +56,7 @@ jwt:
   access_token_ttl: 15m
   issuer: auth-service
   audience: auth-service
+
+
+metrics:
+  interval: 5s
